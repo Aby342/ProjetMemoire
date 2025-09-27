@@ -14,6 +14,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role', 
     ];
 
     protected $hidden = [
@@ -21,15 +22,31 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    // 🔹 Un patient peut avoir plusieurs rendez-vous
+    //  Un patient peut avoir plusieurs rendez-vous
     public function appointments()
     {
         return $this->hasMany(Appointment::class);
     }
 
-    // 🔹 Un patient peut recevoir plusieurs prescriptions
+    //  Un patient peut recevoir plusieurs prescriptions
     public function prescriptions()
     {
         return $this->hasMany(Prescription::class);
+    }
+
+    // Vérification des rôles
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isDoctor()
+    {
+        return $this->role === 'doctor';
+    }
+
+    public function isPatient()
+    {
+        return $this->role === 'patient';
     }
 }

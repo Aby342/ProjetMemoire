@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Appointment extends Model
@@ -12,10 +13,14 @@ class Appointment extends Model
         'status',
     ];
 
+    protected $casts = [
+        'date' => 'datetime',
+    ];
+
     // 🔹 Un rendez-vous appartient à un patient
-    public function user()
+    public function patient()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     // 🔹 Un rendez-vous appartient à un médecin
@@ -30,5 +35,3 @@ class Appointment extends Model
         return $this->hasOne(Prescription::class);
     }
 }
-
-

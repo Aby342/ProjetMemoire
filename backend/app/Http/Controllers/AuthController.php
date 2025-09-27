@@ -16,19 +16,23 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
+            'role' => 'required|in:patient,medecin,admin'
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role,
         ]);
 
-        Auth::login($user);
+        // Génération d’un token Sanctum
+        $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
             'message' => 'Inscription réussie',
-            'user' => $user
+            'user' => $user,
+            'token' => $token
         ], 201);
     }
 
@@ -44,20 +48,20 @@ class AuthController extends Controller
             return response()->json(['message' => 'Identifiants incorrects'], 401);
         }
 
-        $request->session()->regenerate();
+        $user = Auth::user();
+        $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
             'message' => 'Connexion réussie',
-            'user' => Auth::user()
+            'user' => $user,
+            'token' => $token
         ]);
     }
 
     // Déconnexion
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Déconnecté avec succès']);
     }
@@ -65,6 +69,6 @@ class AuthController extends Controller
     // Profil utilisateur
     public function profile(Request $request)
     {
-        return response()->json(Auth::user());
+        return response()->json($request->user());
     }
 }

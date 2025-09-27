@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            // Ajout du rôle (patient | doctor | admin)
+            $table->enum('role', ['patient', 'doctor', 'admin'])->default('patient');
+
             $table->rememberToken();
             $table->timestamps();
         });

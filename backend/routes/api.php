@@ -13,12 +13,25 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // Médecins
-    Route::apiResource('doctors', DoctorController::class);
+// Espace admin : gestion des médecins
+    Route::middleware('role:admin')->group(function () {
+        Route::apiResource('doctors', DoctorController::class);
+    });
+ // Espace patient : prise de rendez-vous
+    Route::middleware('role:patient')->group(function () {
+        Route::apiResource('appointments', AppointmentController::class)->only(['store', 'index', 'show']);
+    });
 
-    // Rendez-vous
-    Route::apiResource('appointments', AppointmentController::class);
+ // Espace médecin : consultations + prescriptions
+    Route::middleware('role:medecin')->group(function () {
+        Route::apiResource('appointments', AppointmentController::class)->only(['update']);
+        Route::apiResource('prescriptions', PrescriptionController::class);
+    });
+//espace user
 
-    // Prescriptions
-    Route::apiResource('prescriptions', PrescriptionController::class);
+    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
 });
+
+});
+
