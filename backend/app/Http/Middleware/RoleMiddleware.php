@@ -1,25 +1,37 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace App\Http;
 
-use Closure;
-use Illuminate\Http\Request;
+use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
-class RoleMiddleware
+class Kernel extends HttpKernel
 {
-    /**
-     * Vérifie si l'utilisateur a un rôle donné.
-     */
-    public function handle(Request $request, Closure $next, ...$roles)
-    {
-        $user = $request->user();
+    protected $middleware = [
+        \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
+        \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
+        \App\Http\Middleware\TrimStrings::class,
+        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+    ];
 
-        if (!$user || !in_array($user->role, $roles)) {
-            return response()->json([
-                'message' => 'Accès refusé. Rôle requis : ' . implode(', ', $roles)
-            ], 403);
-        }
+    protected $middlewareGroups = [
+        'web' => [
+            \App\Http\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \App\Http\Middleware\VerifyCsrfToken::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        ],
+        'api' => [
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            'throttle:api',
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ],
+    ];
 
-        return $next($request);
-    }
+    protected $routeMiddleware = [
+        'auth' => \App\Http\Middleware\Authenticate::class,
+        'role' => \App\Http\Middleware\RoleMiddleware::class, 
+    ];
 }

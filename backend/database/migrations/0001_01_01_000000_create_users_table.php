@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('role')->default('user'); // tu peux mettre doctor, admin, etc.
 
             // Ajout du rôle (patient | doctor | admin)
             $table->enum('role', ['patient', 'doctor', 'admin'])->default('patient');
@@ -49,5 +50,8 @@ return new class extends Migration
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::table('users', function (Blueprint $table) {
+        $table->dropColumn('role');
+        });
     }
 };
