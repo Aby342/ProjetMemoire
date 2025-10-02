@@ -17,19 +17,19 @@ class Appointment extends Model
         'date' => 'datetime',
     ];
 
-    // 🔹 Un rendez-vous appartient à un patient
+    //  Un rendez-vous appartient à un patient
     public function patient()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // 🔹 Un rendez-vous appartient à un médecin
+    //  Un rendez-vous appartient à un médecin
     public function doctor()
     {
         return $this->belongsTo(Doctor::class);
     }
 
-    // 🔹 Un rendez-vous peut avoir une prescription
+    //  Un rendez-vous peut avoir une prescription
     public function prescription()
     {
         return $this->hasOne(Prescription::class);

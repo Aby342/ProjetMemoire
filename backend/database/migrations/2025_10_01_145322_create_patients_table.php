@@ -11,16 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('appointments', function (Blueprint $table) {
+        Schema::create('patients', function (Blueprint $table) {
             $table->id();
             $table->foreignId("user_id")->references("id")->on("users")->OnDelete("cascade");
-            $table->foreignId("doctor_id")->references("id")->on("doctors")->OnDelete("cascade");
-            $table->string("date");
-            $table->string("status");
+            $table->date("date_naissance");
+            $table->string("adresse");
+            $table->enum("groupe_sanguin", [
+               'A_PLUS','A_MOINS','B_PLUS','B_MOINS','AB_PLUS','AB_MOINS','O_PLUS','O_MOINS'
+    ])->nullable();
             $table->timestamps();
-
-
-          
         });
     }
 
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('appointments');
+        Schema::dropIfExists('patients');
     }
 };

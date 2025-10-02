@@ -13,13 +13,13 @@ class Doctor extends Model
         'phone',
     ];
 
-    // 🔹 Un médecin peut avoir plusieurs rendez-vous
+    // Un médecin peut avoir plusieurs rendez-vous
     public function appointments()
     {
         return $this->hasMany(Appointment::class);
     }
 
-    // 🔹 Un médecin peut donner plusieurs prescriptions
+    // Un médecin peut donner plusieurs prescriptions
     public function prescriptions()
     {
         return $this->hasMany(Prescription::class);

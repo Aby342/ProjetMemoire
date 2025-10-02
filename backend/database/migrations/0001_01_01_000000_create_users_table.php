@@ -1,3 +1,5 @@
+Ablaye ly
+20:55
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -17,11 +19,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('role')->default('user'); // tu peux mettre doctor, admin, etc.
-
-            // Ajout du rôle (patient | doctor | admin)
             $table->enum('role', ['patient', 'doctor', 'admin'])->default('patient');
-
             $table->rememberToken();
             $table->timestamps();
         });
