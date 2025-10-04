@@ -1,37 +1,35 @@
 <?php
 
-namespace App\Http;
+namespace App\Http\Middleware;
 
-use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class Kernel extends HttpKernel
+class RoleMiddleware
 {
-    protected $middleware = [
-        \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
-        \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
-        \App\Http\Middleware\TrimStrings::class,
-        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-    ];
+    /**
+     * Vérifie si l'utilisateur a le rôle requis.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @param  string|null  $role
+     * @return mixed
+     */
+    public function handle(Request $request, Closure $next, $role = null)
+    {
+        // Vérifie si l'utilisateur est connecté
+        if (!Auth::check()) {
+            return redirect()->route('login'); // Redirige si non connecté
+        }
 
-    protected $middlewareGroups = [
-        'web' => [
-            \App\Http\Middleware\EncryptCookies::class,
-            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-            \Illuminate\Session\Middleware\StartSession::class,
-            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \App\Http\Middleware\VerifyCsrfToken::class,
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-        ],
-        'api' => [
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            'throttle:api',
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        ],
-    ];
+        $user = Auth::user();
 
-    protected $routeMiddleware = [
-        'auth' => \App\Http\Middleware\Authenticate::class,
-        'role' => \App\Http\Middleware\RoleMiddleware::class, 
-    ];
+        // Si un rôle est passé en paramètre et que l'utilisateur n'a pas ce rôle
+        if ($role && $user->role !== $role) {
+            abort(403, 'Accès refusé : rôle non autorisé.');
+        }
+
+        return $next($request);
+    }
 }
