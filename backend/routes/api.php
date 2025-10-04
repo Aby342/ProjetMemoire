@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\PatientController;
 
 // ---------------------------
 // AUTH
@@ -25,12 +26,21 @@ Route::middleware('auth:sanctum')->group(function () {
     // ADMIN ROUTES
     // -----------------------
     Route::middleware('role:admin')->group(function () {
-        Route::apiResource('doctors', DoctorController::class);
+    Route::apiResource('doctors', DoctorController::class);
+    Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    Route::get('/patients', [PatientController::class, 'index']);
+    Route::get('/patients/{id}', [PatientController::class, 'show']);
+});
+
     });
 
     // -----------------------
     // PATIENT ROUTES
     // -----------------------
+    Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    Route::get('/patients', [PatientController::class, 'index']);
+    Route::get('/patients/{id}', [PatientController::class, 'show']);
+});
     Route::middleware('role:patient')->group(function () {
         Route::apiResource('appointments', AppointmentController::class)
             ->only(['store', 'index', 'show']);
@@ -39,7 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // -----------------------
     // MEDECIN ROUTES
     // -----------------------
-    Route::middleware('role:medecin')->group(function () {
+    Route::middleware('role:doctor')->group(function () {
         Route::apiResource('appointments', AppointmentController::class)
             ->only(['update']);
         Route::apiResource('prescriptions', PrescriptionController::class);
