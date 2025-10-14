@@ -9,7 +9,8 @@ class AppointmentController extends Controller
 {
     public function index()
     {
-        return Appointment::with(['user', 'doctor'])->get();
+        Appointment::with(['patient', 'doctor'])->get();
+
     }
 
     public function store(Request $request)
@@ -18,6 +19,7 @@ class AppointmentController extends Controller
             'user_id' => 'required|exists:users,id',
             'doctor_id' => 'required|exists:doctors,id',
             'date' => 'required|date',
+            'motif' => 'required|string',
             'status' => 'required|string'
         ]);
 
@@ -28,7 +30,8 @@ class AppointmentController extends Controller
 
     public function show($id)
     {
-        return Appointment::with(['user', 'doctor', 'prescription'])->findOrFail($id);
+       Appointment::with(['patient', 'doctor', 'prescription'])->findOrFail($id);
+
     }
 
     public function update(Request $request, $id)

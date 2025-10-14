@@ -21,6 +21,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('doctors', DoctorController::class);
         Route::get('/patients', [PatientController::class, 'index']);
         Route::get('/patients/{id}', [PatientController::class, 'show']);
+        Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+       Route::get('/admin/users', [AdminController::class, 'index']);
+        Route::delete('/admin/user/{id}', [AdminController::class, 'destroy']);
+});
+
         
     });
 

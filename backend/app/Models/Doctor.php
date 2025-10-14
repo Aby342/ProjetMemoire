@@ -6,11 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Doctor extends Model
 {
-    protected $fillable = [
+    protected $fillable =  [
+        'user_id',   
         'name',
-        'speciality',
+        'specialite_id',
         'email',
+        'experience',
         'phone',
+        'diplomes'
     ];
 
     // Un médecin peut avoir plusieurs rendez-vous

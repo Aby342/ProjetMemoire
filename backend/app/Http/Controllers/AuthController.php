@@ -9,31 +9,38 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    // Inscription
+    //  Inscription
     public function register(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
-            'role' => 'required|in:patient,doctor,admin'
+            'role' => 'required|in:patient,doctor,admin',
+            
         ]);
 
+        // Nettoyage UTF-8 avant insertion
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name' => utf8_encode($request->name),
+            'email' => utf8_encode($request->email),
             'password' => Hash::make($request->password),
             'role' => $request->role,
         ]);
 
-        // Génération d’un token Sanctum
-        $token = $user->createToken('api-token')->plainTextToken;
+        // Génération d’un seul token Sanctum
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => 'Inscription réussie',
-            'user' => $user,
-            'token' => $token
-        ], 201);
+            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+            ],
+        ], 201, [], JSON_UNESCAPED_UNICODE); //  UTF-8 safe
     }
 
     // Connexion
@@ -49,13 +56,13 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
-        $token = $user->createToken('api-token')->plainTextToken;
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => 'Connexion réussie',
             'user' => $user,
-            'token' => $token
-        ]);
+            'token' => $token,
+        ], 200, [], JSON_UNESCAPED_UNICODE);
     }
 
     // Déconnexion
@@ -63,12 +70,12 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Déconnecté avec succès']);
+        return response()->json(['message' => 'Déconnecté avec succès'], 200, [], JSON_UNESCAPED_UNICODE);
     }
 
     // Profil utilisateur
     public function profile(Request $request)
     {
-        return response()->json($request->user());
+        return response()->json($request->user(), 200, [], JSON_UNESCAPED_UNICODE);
     }
 }

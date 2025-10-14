@@ -5,9 +5,13 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Specialite;
+
 
 class User extends Authenticatable
 {
+    use HasFactory;
     use HasApiTokens, Notifiable;
 
     protected $fillable = [
@@ -49,4 +53,12 @@ class User extends Authenticatable
     {
         return $this->role === 'patient';
     }
-}
+
+    public function specialite()
+   {
+     return $this->belongsTo(\App\Models\Specialite::class);
+   }
+
+};
+
+

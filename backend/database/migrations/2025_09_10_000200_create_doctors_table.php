@@ -12,14 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('doctors', function (Blueprint $table) {
-            $table->id();
-            $table->string("name");
-            $table->string("speciality");
-            $table->string("email");
-            $table->string("phone");
-            $table->timestamps();
+    $table->id();
+    $table->foreignId('user_id')->constrained()->onDelete('cascade');
+       $table->foreignId('specialite_id')->constrained()->onDelete('cascade');
+    $table->string('name');
+    $table->string('email')->unique(); // si chaque doctor a son propre email
+    $table->string('phone')->nullable(); // si le téléphone est optionnel
+    $table->integer('experience');
+    $table->string('diplomes');
+    $table->timestamps();
+});
+
+
             
-        });
+
     }
 
     /**
