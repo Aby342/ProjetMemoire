@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId("doctor_id")->references("id")->on("doctors")->OnDelete("cascade");
             $table->string("date");
            $table->string('motif');
-           $table->enum('statut', ['EN_ATTENTE', 'CONFIRME', 'ANNULE']);
+           $table->enum('status', ['EN_ATTENTE', 'CONFIRME', 'ANNULE']);
             $table->timestamps();
 
 

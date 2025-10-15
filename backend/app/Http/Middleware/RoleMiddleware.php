@@ -17,19 +17,18 @@ class RoleMiddleware
      * @return mixed
      */
     public function handle(Request $request, Closure $next, $role = null)
-    {
-        // Vérifie si l'utilisateur est connecté
-        if (!Auth::check()) {
-            return redirect()->route('login'); // Redirige si non connecté
-        }
-
-        $user = Auth::user();
-
-        // Si un rôle est passé en paramètre et que l'utilisateur n'a pas ce rôle
-        if ($role && $user->role !== $role) {
-            abort(403, 'Accès refusé : rôle non autorisé.');
-        }
-
-        return $next($request);
+{
+    if (!Auth::check()) {
+        return response()->json(['message' => 'Veuillez vous connecter.'], 401);
     }
+
+    $user = Auth::user();
+
+    if ($role && $user->role !== $role) {
+        return response()->json(['message' => 'Accès refusé : rôle non autorisé.'], 403);
+    }
+
+    return $next($request);
+}
+
 }
